@@ -13,6 +13,14 @@ def apiOverview(request):
     return Response(serializer.data)
 
 @api_view(['GET'])
+def get_conversations_list(request, user_id):
+    user = User.objects.get(id=user_id)
+    conversations_list = user.conversations.all()
+    serializer = ConversationSerializer(conversations_list, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+#@renderer_classes([JSONRenderer])
 def get_messages(request, conversation_id):
     conversation = Conversation.objects.get(id=conversation_id)
     messages = conversation.messages.all()
@@ -30,4 +38,9 @@ def send_message(request):
 
 @api_view(['POST'])
 def create_conversation(request):
-    pass
+    serializer = ConversationSerializer(data=request.data)
+
+    if serializer.is_valid():
+        serializer.save()
+
+    return Response(serializer.data)
