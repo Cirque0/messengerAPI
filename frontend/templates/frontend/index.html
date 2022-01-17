@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(function(){
+            $.get('http://127.0.0.1:8000/api/get-messages/2', function(data, status){
+                console.log(data)
+                data.forEach(element => {
+                    $("form").before(`<p> ${element.sender} : ${element.message} </p>`)
+                });
+            });
+
+            $('form').submit(function() {
+                const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+                $.ajax({
+                    type: "POST",
+                    url: 'http://127.0.0.1:8000/api/send-message',
+                    data: {
+                        sender: 1,
+                        receiver: 2,
+                        message: $("#message").val(),
+                        
+                    },
+                    headers: {'X-CSRFToken': csrftoken},
+                    dataType: 'json'
+                });
+            });
+        });
+
+    </script>
+</head>
+<body>
+    <form id="testform">
+        {%csrf_token%}
+        <input type="text" name="message" id="message">
+        <input type="submit" value="Send">
+    </form>
+</body>
+</html>

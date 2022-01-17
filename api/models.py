@@ -9,6 +9,7 @@ class User(AbstractUser):
 class Conversation(models.Model):
     name = models.CharField(max_length=64, blank=True)
     members = models.ManyToManyField(User, blank=False, related_name="conversations")
+    is_group_conversation = models.BooleanField()
 
 class Message(models.Model):
     sender = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name="outbox")

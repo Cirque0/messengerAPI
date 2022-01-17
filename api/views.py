@@ -30,6 +30,7 @@ def get_messages(request, conversation_id):
 @api_view(['POST'])
 def send_message(request):
     serializer = MessageSerializer(data=request.data)
+    print(request.data)
 
     if serializer.is_valid():
         serializer.save()
