@@ -7,38 +7,57 @@
     <title>Document</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script>
-        $(function(){
-            $.get('http://127.0.0.1:8000/api/get-messages/2', function(data, status){
-                console.log(data)
+        function getMessages() {
+            $.get('http://127.0.0.1:8000/api/get-messages/1', function(data, status){
+                let messages = "";
                 data.forEach(element => {
-                    $("form").before(`<p> ${element.sender} : ${element.message} </p>`)
+                    messages += `<p> ${element.sender} : ${element.message} </p>`;
                 });
+                $("div#messages").html(messages);
             });
+        }
+
+        $(function(){
+            getMessages();
 
             $('form').submit(function() {
                 const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-                $.ajax({
-                    type: "POST",
-                    url: 'http://127.0.0.1:8000/api/send-message',
-                    data: {
-                        sender: 1,
-                        receiver: 2,
-                        message: $("#message").val(),
-                        
-                    },
-                    headers: {'X-CSRFToken': csrftoken},
-                    dataType: 'json'
-                });
+                let message = $("#message").val();
+                if(/\S/.test(message)) {
+                    $.ajax({
+                        type: "POST",
+                        url: 'http://127.0.0.1:8000/api/send-message',
+                        data: {
+                            sender: 1,
+                            receiver: 1,
+                            message: message,
+                            
+                        },
+                        headers: {'X-CSRFToken': csrftoken},
+                        dataType: 'json'
+                    });
+                    $("input#message").val("");
+                    $("div#messages").append(`<p> 1 : ${message}`);
+                }
+                
+                return false;
             });
         });
 
     </script>
 </head>
 <body>
+    <div id="messages">
+
+    </div>
     <form id="testform">
         {%csrf_token%}
         <input type="text" name="message" id="message">
         <input type="submit" value="Send">
     </form>
+
+    <script>
+        setInterval(getMessages, 2000);
+    </script>
 </body>
 </html>
